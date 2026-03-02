@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Smart Crop Yield Predictor</title>
+    <style>
+        body{
+            font-family: Arial;
+            background:#f4f9f4;
+            padding:20px;
+        }
+        .container{
+            background:white;
+            padding:20px;
+            border-radius:10px;
+            max-width:600px;
+            margin:auto;
+            box-shadow:0 0 10px gray;
+        }
+        h2{
+            text-align:center;
+            color:green;
+        }
+        select,input{
+            width:100%;
+            padding:8px;
+            margin:5px 0 15px 0;
+        }
+        button{
+            background:green;
+            color:white;
+            padding:10px;
+            border:none;
+            width:100%;
+            cursor:pointer;
+            font-size:16px;
+        }
+        button:hover{
+            background:darkgreen;
+        }
+        .result{
+            background:#eafaea;
+            padding:15px;
+            margin-top:20px;
+            border-radius:8px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Smart Crop Yield Predictor</h2>
+
+    <label>Land Size (Acre)</label>
+    <input type="number" id="land">
+
+    <label>Crop</label>
+    <select id="crop">
+        <option value="cotton">Cotton</option>
+        <option value="wheat">Wheat</option>
+        <option value="groundnut">Groundnut</option>
+        <option value="cumin">Cumin</option>
+    </select>
+
+    <label>Soil Type</label>
+    <select id="soil">
+        <option value="1.10">Black</option>
+        <option value="0.90">Sandy</option>
+        <option value="1.00">Clay</option>
+        <option value="0.95">Red</option>
+    </select>
+
+    <label>Irrigation Type</label>
+    <select id="irrigation">
+        <option value="1.15">Drip</option>
+        <option value="1.05">Sprinkler</option>
+        <option value="1.00">Canal</option>
+        <option value="0.85">Rainfed</option>
+    </select>
+
+    <label>Fertilizer Type</label>
+    <select id="fertilizer">
+        <option value="1.05">Organic</option>
+        <option value="1.10">Chemical</option>
+        <option value="1.15">Mixed</option>
+    </select>
+
+    <button onclick="calculate()">Predict</button>
+
+    <div class="result" id="output"></div>
+</div>
+
+<script>
+function calculate(){
+
+    var land = parseFloat(document.getElementById("land").value);
+    var crop = document.getElementById("crop").value;
+    var soil = parseFloat(document.getElementById("soil").value);
+    var irrigation = parseFloat(document.getElementById("irrigation").value);
+    var fertilizer = parseFloat(document.getElementById("fertilizer").value);
+
+    if(!land){
+        alert("Please enter land size");
+        return;
+    }
+
+    var baseYield = {
+        cotton:15,
+        wheat:20,
+        groundnut:18,
+        cumin:8
+    };
+
+    var price = {
+        cotton:7000,
+        wheat:2200,
+        groundnut:6000,
+        cumin:12000
+    };
+
+    var predictedYield = baseYield[crop] * soil * irrigation * fertilizer;
+    var totalProduction = predictedYield * land;
+    var totalIncome = totalProduction * price[crop];
+    var estimatedCost = land * 30000;
+    var netProfit = totalIncome - estimatedCost;
+
+    var success = Math.round(((soil + irrigation + fertilizer)/3)*100);
+
+    var risk = "Medium";
+    if(soil > 1 && irrigation > 1) risk = "Low";
+    if(irrigation < 1) risk = "High";
+
+    var alternative = "Groundnut";
+    if(crop == "cotton") alternative = "Cumin";
+    if(crop == "wheat") alternative = "Groundnut";
+    if(crop == "groundnut") alternative = "Cumin";
+    if(crop == "cumin") alternative = "Wheat";
+
+    document.getElementById("output").innerHTML = `
+        <h3>Prediction Result</h3>
+        Predicted Yield: ${predictedYield.toFixed(2)} Quintal/Acre <br>
+        Total Production: ${totalProduction.toFixed(2)} Quintal <br>
+        Success Probability: ${success}% <br>
+        Net Profit: ₹${netProfit.toFixed(0)} <br>
+        Risk Level: ${risk} <br>
+        Alternative Crop Suggestion: ${alternative} <br>
+        Best Sowing Time: 15–25 June <br>
+        Irrigation Plan: 2 times/week
+    `;
+}
+</script>
+
+</body>
+</html>
